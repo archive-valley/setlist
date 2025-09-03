@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GR23VY // SETLIST GENERATOR</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background: #0a0a0a;
+            --primary-glow: #00ff00;
+            --secondary-glow: #ff00c1;
+            --tertiary-glow: #00fff9;
+        }
+
+        /* Base styling from ARCHIVE435 */
+        body {
+            background-color: var(--background);
+            color: var(--primary-glow);
+            font-family: 'VT323', monospace;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* CRT Scanline Overlay */
+        body::after {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 100;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+            animation: flicker 0.15s infinite;
+        }
+        
+        @keyframes flicker {
+          0% { opacity: 0.27861; } 5% { opacity: 0.34769; } 10% { opacity: 0.23604; } 15% { opacity: 0.90626; } 20% { opacity: 0.18128; } 25% { opacity: 0.83891; } 30% { opacity: 0.65583; } 35% { opacity: 0.67807; } 40% { opacity: 0.26559; } 45% { opacity: 0.84693; } 50% { opacity: 0.96019; } 55% { opacity: 0.08594; } 60% { opacity: 0.20313; } 65% { opacity: 0.71988; } 70% { opacity: 0.53455; } 75% { opacity: 0.37288; } 80% { opacity: 0.71428; } 85% { opacity: 0.70419; } 90% { opacity: 0.7003; } 95% { opacity: 0.36108; } 100% { opacity: 0.24387; }
+        }
+
+        /* gr23vy Glitch Effect */
+        .glitch {
+            animation: glitch-base 1.5s linear infinite;
+            position: relative;
+        }
+
+        @keyframes glitch-base {
+            2%, 64% { transform: translate(2px, 0) skew(0deg); }
+            4%, 60% { transform: translate(-2px, 0) skew(0deg); }
+            62% { transform: translate(0, 0) skew(5deg); }
+        }
+
+        .glitch:before,
+        .glitch:after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--background);
+        }
+
+        .glitch:before {
+            left: 2px;
+            text-shadow: -2px 0 var(--secondary-glow);
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim-1 5s infinite linear alternate-reverse;
+        }
+
+        .glitch:after {
+            left: -2px;
+            text-shadow: -2px 0 var(--tertiary-glow), 2px 2px var(--secondary-glow);
+            clip: rect(85px, 450px, 90px, 0);
+            animation: glitch-anim-2 3s infinite linear alternate-reverse;
+        }
+        
+        @keyframes glitch-anim-1 {
+          0% { clip: rect(42px, 9999px, 44px, 0); transform: skew(0.3deg); } 5% { clip: rect(17px, 9999px, 96px, 0); } 10% { clip: rect(40px, 9999px, 66px, 0); } 15% { clip: rect(87px, 9999px, 82px, 0); } 20% { clip: rect(13px, 9999px, 59px, 0); } 25% { clip: rect(35px, 9999px, 4px, 0); } 30% { clip: rect(53px, 9999px, 86px, 0); } 35% { clip: rect(26px, 9999px, 34px, 0); } 40% { clip: rect(59px, 9999px, 50px, 0); } 45% { clip: rect(47px, 9999px, 99px, 0); } 50% { clip: rect(10px, 9999px, 95px, 0); } 55% { clip: rect(78px, 9999px, 53px, 0); } 60% { clip: rect(19px, 9999px, 73px, 0); } 65% { clip: rect(66px, 9999px, 3px, 0); } 70% { clip: rect(89px, 9999px, 41px, 0); } 75% { clip: rect(43px, 9999px, 73px, 0); } 80% { clip: rect(2px, 9999px, 57px, 0); } 85% { clip: rect(10px, 9999px, 60px, 0); } 90% { clip: rect(78px, 9999px, 88px, 0); } 95% { clip: rect(13px, 9999px, 91px, 0); } 100% { clip: rect(42px, 9999px, 44px, 0); transform: skew(0.3deg); }
+        }
+
+        @keyframes glitch-anim-2 {
+          0% { clip: rect(2px, 9999px, 99px, 0); transform: skew(0.2deg); } 5% { clip: rect(84px, 9999px, 90px, 0); } 10% { clip: rect(85px, 9999px, 66px, 0); } 15% { clip: rect(25px, 9999px, 45px, 0); } 20% { clip: rect(39px, 9999px, 7px, 0); } 25% { clip: rect(48px, 9999px, 91px, 0); } 30% { clip: rect(8px, 9999px, 12px, 0); } 35% { clip: rect(4px, 9999px, 20px, 0); } 40% { clip: rect(17px, 9999px, 3px, 0); } 45% { clip: rect(18px, 9999px, 8px, 0); } 50% { clip: rect(8px, 9999px, 3px, 0); } 55% { clip: rect(43px, 9999px, 99px, 0); } 60% { clip: rect(7px, 9999px, 89px, 0); } 65% { clip: rect(51px, 9999px, 94px, 0); } 70% { clip: rect(85px, 9999px, 2px, 0); } 75% { clip: rect(32px, 9999px, 77px, 0); } 80% { clip: rect(19px, 9999px, 35px, 0); } 85% { clip: rect(66px, 9999px, 79px, 0); } 90% { clip: rect(4px, 9999px, 30px, 0); } 95% { clip: rect(76px, 9999px, 11px, 0); } 100% { clip: rect(2px, 9999px, 99px, 0); transform: skew(0.2deg); }
+        }
+
+        /* Button Styling */
+        .action-button {
+            border-image-slice: 2; border-image-width: 2; border-image-repeat: stretch;
+            border-image-source: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-8" ?><svg version="1.1" width="5" height="5" xmlns="http://www.w3.org/2000/svg"><path d="M2 1 h1 v1 h-1 z M1 2 h1 v1 h-1 z M3 2 h1 v1 h-1 z M2 3 h1 v1 h-1 z" fill="rgb(0,255,0)" /></svg>');
+            border-image-outset: 2; position: relative; display: inline-block; padding: 10px 20px; margin: 0.5rem; color: var(--primary-glow);
+            text-transform: uppercase; letter-spacing: 4px; text-decoration: none; font-size: 20px; overflow: hidden; transition: 0.2s;
+            background: transparent; cursor: pointer;
+        }
+        .action-button:hover { color: var(--background); background: var(--primary-glow); box-shadow: 0 0 10px var(--primary-glow), 0 0 40px var(--primary-glow), 0 0 80px var(--primary-glow); }
+
+        .length-box {
+            font-size: 24px;
+            padding: 1rem;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Custom styles for range inputs (sliders) */
+        input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; background: transparent; cursor: pointer; }
+        input[type="range"]:focus { outline: none; }
+        /* Chrome, Safari, Opera, Edge */
+        input[type="range"]::-webkit-slider-runnable-track { height: 4px; background: var(--primary-glow); }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; margin-top: -6px; background-color: var(--primary-glow); height: 16px; width: 16px; box-shadow: 0 0 10px var(--primary-glow); }
+        /* Firefox */
+        input[type="range"]::-moz-range-track { height: 4px; background: var(--primary-glow); }
+        input[type="range"]::-moz-range-thumb { border: none; border-radius: 0; background-color: var(--primary-glow); height: 16px; width: 16px; box-shadow: 0 0 10px var(--primary-glow); }
+
+        /* Hide/show utility classes */
+        .hidden { display: none; }
+        
+        .footer-terminal { font-family: 'Share Tech Mono', monospace; font-size: 14px; color: #33ff33; text-shadow: 0 0 5px #33ff33; }
+        .footer-terminal::before { content: 'root@gr23vy:~# '; color: #ff3333; }
+        .blinking-cursor { animation: blink 1s step-end infinite; }
+        @keyframes blink { 50% { color: transparent; } }
+
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+
+    <!-- Main Content Area -->
+    <div class="w-full max-w-lg text-center">
+        <header class="mb-8">
+            <h1 class="text-6xl md:text-8xl font-bold glitch" data-text="gr23vy">gr23vy</h1>
+            <p class="text-lg text-cyan-400 mt-2" style="text-shadow: 0 0 5px var(--tertiary-glow);">// SETLIST_GENERATOR.EXE // ARCHIVE.VALLEY //</p>
+        </header>
+
+        <!-- Step 1: Song Count Input -->
+        <section id="songCountSection" class="p-4">
+            <label class="block mb-6 text-2xl tracking-widest">SELECT SETLIST LENGTH</label>
+            <div id="setlistLengthSelector" class="flex flex-wrap justify-center items-center gap-2">
+                <button class="length-box action-button" data-count="1">1</button>
+                <button class="length-box action-button" data-count="2">2</button>
+                <button class="length-box action-button" data-count="3">3</button>
+                <button class="length-box action-button" data-count="4">4</button>
+                <button class="length-box action-button" data-count="5">5</button>
+            </div>
+        </section>
+
+        <!-- Step 2: Setlist Display -->
+        <section id="setlistSection" class="hidden p-4">
+            <h2 class="text-3xl mb-4 tracking-widest">// INCOMING TRANSMISSION...</h2>
+            <div id="setlistOutput" class="text-left max-w-md mx-auto mb-6 text-xl space-y-1 font-mono">
+                <!-- Song list will be injected here -->
+            </div>
+            <div class="flex flex-col sm:flex-row justify-center items-center">
+                <button id="playBtn" class="action-button">Play Live</button>
+                <button id="downloadBtn" class="action-button">Download .zip</button>
+            </div>
+             <button id="resetBtn" class="action-button mt-4" style="font-size: 16px; padding: 8px 16px; border-color: #ff3333; color:#ff3333;">&lt;-- Back</button>
+        </section>
+
+        <!-- Step 3: Player/Mixer -->
+        <section id="playerSection" class="hidden p-4 w-full">
+            <div id="nowPlaying" class="mb-6 text-2xl tracking-widest font-mono">
+                <!-- Now playing info here -->
+            </div>
+            <div class="space-y-6 max-w-sm mx-auto">
+                <!-- Sliders for mixing -->
+                <div class="mixer-control text-left">
+                    <label for="vocals" class="text-xl tracking-wider">VOCALS</label>
+                    <input type="range" id="vocals" name="vocals" min="0" max="100" value="100">
+                </div>
+                <div class="mixer-control text-left">
+                    <label for="music" class="text-xl tracking-wider">MUSIC</label>
+                    <input type="range" id="music" name="music" min="0" max="100" value="100">
+                </div>
+                <div class="mixer-control text-left">
+                    <label for="drums" class="text-xl tracking-wider">DRUMS</label>
+                    <input type="range" id="drums" name="drums" min="0" max="100" value="100">
+                </div>
+                <div class="mixer-control text-left">
+                    <label for="bass" class="text-xl tracking-wider">BASS</label>
+                    <input type="range" id="bass" name="bass" min="0" max="100" value="100">
+                </div>
+            </div>
+            <button id="playerResetBtn" class="action-button mt-8" style="font-size: 16px; padding: 8px 16px; border-color: #ff3333; color:#ff3333;">&lt;-- Back to Setlist</button>
+        </section>
+        
+        <!-- Dummy Download Message Modal -->
+        <div id="downloadModal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+            <div class="border-2 border-pink-500 p-8 text-center shadow-lg shadow-pink-500/50">
+                <h3 class="text-2xl mb-4 text-pink-500">// COMPILING ARCHIVE...</h3>
+                <p class="mb-6 font-mono">gr23vy_setlist_2025.zip (135MB)</p>
+                <p class="text-sm mb-6">// DOWNLOAD WILL BEGIN SHORTLY...</p>
+                <button id="closeModalBtn" class="action-button" style="border-color: #ff00c1; color:#ff00c1;">CLOSE</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="absolute bottom-4 left-4 footer-terminal">
+        <span>SESSION ACTIVE... STATUS: ONLINE</span><span class="blinking-cursor">_</span>
+    </footer>
+
+    <script>
+        // --- DOM Elements ---
+        const songCountSection = document.getElementById('songCountSection');
+        const setlistSection = document.getElementById('setlistSection');
+        const playerSection = document.getElementById('playerSection');
+        
+        const setlistLengthSelector = document.getElementById('setlistLengthSelector');
+        const setlistOutput = document.getElementById('setlistOutput');
+        
+        const playBtn = document.getElementById('playBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const playerResetBtn = document.getElementById('playerResetBtn');
+
+        const nowPlayingDisplay = document.getElementById('nowPlaying');
+        
+        const downloadModal = document.getElementById('downloadModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        
+        const glitchHeader = document.querySelector('.glitch');
+
+        // --- Name Animation ---
+        const nameVariations = ['gr23vy', 'GROOVY', 'GR23VY', 'groovy'];
+        setInterval(() => {
+            const currentName = glitchHeader.textContent;
+            // Filter out the current name to ensure the next one is different
+            const otherOptions = nameVariations.filter(name => name !== currentName);
+            const randomIndex = Math.floor(Math.random() * otherOptions.length);
+            const newName = otherOptions[randomIndex];
+            
+            glitchHeader.textContent = newName;
+            glitchHeader.setAttribute('data-text', newName);
+        }, 3000); // Changed interval to 3 seconds
+
+        // --- Song Database ---
+        const ALL_SONGS = [
+            "Digital Ghost", "Neon Pulse", "Chrome Heart", "Glitch in the System",
+            "Sub-Routine", "Mainframe Blues", "Virtual Love", "Cyber Sunset",
+            "Dial-Up Dream", "Data Stream", "Firewall", "Zero Day"
+        ];
+        
+        let currentSetlist = [];
+
+        // --- Functions & Logic ---
+
+        function generateSetlist(count) {
+            if (isNaN(count) || count < 1 || count > ALL_SONGS.length) {
+                console.error("Invalid song count requested.");
+                return;
+            }
+            
+            // Shuffle songs and pick the requested number
+            const shuffled = [...ALL_SONGS].sort(() => 0.5 - Math.random());
+            currentSetlist = shuffled.slice(0, count);
+            
+            // Populate the setlist display
+            setlistOutput.innerHTML = currentSetlist.map((song, index) => 
+                `<p><span class="text-gray-500">${String(index + 1).padStart(2, '0')}.</span> ${song}</p>`
+            ).join('');
+
+            // Transition UI
+            songCountSection.classList.add('hidden');
+            playerSection.classList.add('hidden');
+            setlistSection.classList.remove('hidden');
+        }
+
+        function showPlayer() {
+            setlistSection.classList.add('hidden');
+            playerSection.classList.remove('hidden');
+            nowPlayingDisplay.textContent = `// NOW PLAYING: ${currentSetlist[0]} //`;
+        }
+        
+        function resetToSetlist() {
+            playerSection.classList.add('hidden');
+            setlistSection.classList.remove('hidden');
+        }
+
+        function resetToStart() {
+            setlistSection.classList.add('hidden');
+            playerSection.classList.add('hidden');
+            songCountSection.classList.remove('hidden');
+            currentSetlist = [];
+        }
+        
+        function showDownloadModal() {
+            downloadModal.classList.remove('hidden');
+        }
+        
+        function hideDownloadModal() {
+            downloadModal.classList.add('hidden');
+        }
+
+        // --- Event Listeners ---
+        setlistLengthSelector.addEventListener('click', (event) => {
+            const target = event.target.closest('.length-box');
+            if (target) {
+                const count = parseInt(target.dataset.count, 10);
+                generateSetlist(count);
+            }
+        });
+        
+        playBtn.addEventListener('click', showPlayer);
+        resetBtn.addEventListener('click', resetToStart);
+        playerResetBtn.addEventListener('click', resetToSetlist);
+        downloadBtn.addEventListener('click', showDownloadModal);
+        closeModalBtn.addEventListener('click', hideDownloadModal);
+
+    </script>
+</body>
+</html>
+
+
+
+
