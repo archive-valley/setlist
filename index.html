@@ -8,57 +8,149 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --main-color: #00ff00;
-            --bg-color: #0a0a0a;
-            --glow-color: #00ff00;
-            --secondary-glow: #00fff9;
-            --error-color: #ff3333;
+            --bg-color: #121212;
+            --surface-color: #1e1e1e;
+            --primary-text-color: #F5F5F5;
+            --secondary-text-color: #A0A0A0;
+            --accent-color: #8A2BE2; /* A vibrant purple */
+            --accent-hover-color: #9932CC;
+            --glitch-cyan-color: #00FFFF;
         }
-        body { background-color: var(--bg-color); color: var(--main-color); font-family: 'VT323', monospace; overflow-x: hidden; position: relative; }
-        body::after { content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); z-index: -1; background-size: 100% 2px, 3px 100%; pointer-events: none; animation: flicker 0.15s infinite; }
-        @keyframes flicker { 0%{opacity:0.27861}5%{opacity:0.34769}10%{opacity:0.23604}15%{opacity:0.90626}20%{opacity:0.18128}25%{opacity:0.83891}30%{opacity:0.65583}35%{opacity:0.67807}40%{opacity:0.26559}45%{opacity:0.84693}50%{opacity:0.96019}55%{opacity:0.08594}60%{opacity:0.20313}65%{opacity:0.71988}70%{opacity:0.53455}75%{opacity:0.37288}80%{opacity:0.71428}85%{opacity:0.70419}90%{opacity:0.7003}95%{opacity:0.36108}100%{opacity:0.24387} }
-        .glitch { animation: glitch 1.5s linear infinite; position: relative; }
-        @keyframes glitch { 2%,64%{transform:translate(2px,0) skew(0deg)}4%,60%{transform:translate(-2px,0) skew(0deg)}62%{transform:translate(0,0) skew(5deg)} }
-        .glitch:before, .glitch:after { content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); }
-        .glitch:before { left: 2px; text-shadow: -2px 0 #ff00c1; clip: rect(44px, 450px, 56px, 0); animation: glitch-anim 5s infinite linear alternate-reverse; }
-        .glitch:after { left: -2px; text-shadow: -2px 0 var(--secondary-glow), 2px 2px #ff00c1; clip: rect(85px, 450px, 90px, 0); animation: glitch-anim-2 3s infinite linear alternate-reverse; }
-        @keyframes glitch-anim { 0%{clip:rect(42px,9999px,44px,0);transform:skew(.3deg)}100%{clip:rect(42px,9999px,44px,0);transform:skew(.3deg)} }
-        @keyframes glitch-anim-2 { 0%{clip:rect(2px,9999px,99px,0);transform:skew(.2deg)}100%{clip:rect(2px,9999px,99px,0);transform:skew(.2deg)} }
-        .action-button, .count-box, .track-box, .playback-button { border: 2px solid var(--main-color); padding: 10px 20px; font-size: 20px; text-transform: uppercase; letter-spacing: 2px; transition: all 0.3s; cursor: pointer; box-shadow: 0 0 5px var(--glow-color), inset 0 0 5px var(--glow-color); }
-        .action-button:hover, .count-box:hover, .track-box:hover, .playback-button:hover, .count-box.selected { background: var(--main-color); color: var(--bg-color); box-shadow: 0 0 20px var(--glow-color); }
-        .playback-button:disabled { border-color: #555; color: #555; cursor: not-allowed; background: transparent; box-shadow: none; }
-        .playback-button:disabled svg { fill: #555; }
-        .playback-button svg { fill: var(--main-color); width: 24px; height: 24px; transition: fill 0.3s; }
-        .playback-button:hover svg { fill: var(--bg-color); }
-        .track-box.selected { background: #ff00c1; color: var(--bg-color); border-color: #ff00c1; box-shadow: 0 0 20px #ff00c1; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--primary-text-color);
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* GLITCH EFFECT STYLES */
+        .glitch { 
+            position: relative;
+            font-weight: 900;
+            animation: glitch-skew 1s infinite linear alternate-reverse;
+        }
+        .glitch::before, .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-color); /* Match the body background */
+        }
+        .glitch::before {
+            left: 2px;
+            text-shadow: -2px 0 var(--accent-color);
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim 5s infinite linear alternate-reverse;
+        }
+        .glitch::after {
+            left: -2px;
+            text-shadow: -2px 0 var(--glitch-cyan-color), 2px 2px var(--accent-color);
+            clip: rect(85px, 450px, 90px, 0);
+            animation: glitch-anim-2 3s infinite linear alternate-reverse;
+        }
+        @keyframes glitch-skew {
+          0% { transform: skew(0deg); }
+          5% { transform: skew(1deg); }
+          10% { transform: skew(-0.5deg); }
+          /* ... more steps ... */
+          100% { transform: skew(0deg); }
+        }
+        @keyframes glitch-anim {
+          0% { clip: rect(22px, 9999px, 98px, 0); transform: skew(0.2deg); }
+          /* ... more steps ... */
+          100% { clip: rect(84px, 9999px, 3px, 0); transform: skew(0.4deg); }
+        }
+        @keyframes glitch-anim-2 {
+          0% { clip: rect(5px, 9999px, 82px, 0); transform: skew(0.3deg); }
+          /* ... more steps ... */
+          100% { clip: rect(42px, 9999px, 98px, 0); transform: skew(0.2deg); }
+        }
+
+
+        .action-button, .count-box, .track-box, .playback-button {
+            background-color: transparent;
+            border: 2px solid var(--secondary-text-color);
+            color: var(--primary-text-color);
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border-radius: 8px;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+
+        .action-button:hover, .count-box:hover, .track-box:hover, .playback-button:hover {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            color: var(--primary-text-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+        }
+        
+        .count-box.selected, .track-box.selected {
+             background-color: var(--accent-color);
+             border-color: var(--accent-color);
+             box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+        }
+        
+        .playback-button { padding: 12px; line-height: 0; }
+        .playback-button:disabled { transform: none; box-shadow: none; background-color: transparent; border-color: #444; cursor: not-allowed; }
+        .playback-button:disabled svg { fill: #444; }
+        .playback-button svg { fill: var(--primary-text-color); width: 24px; height: 24px; transition: fill 0.2s ease-in-out; }
+        .playback-button:hover svg { fill: var(--primary-text-color); }
+
         .hidden { display: none; }
-        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+            margin: 10px 0;
+        }
         input[type=range]:focus { outline: none; }
-        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: var(--main-color); box-shadow: 0 0 5px var(--glow-color); }
-        input[type=range]::-webkit-slider-thumb { border: 2px solid var(--bg-color); height: 24px; width: 12px; background: var(--main-color); cursor: pointer; -webkit-appearance: none; margin-top: -10px; box-shadow: 0 0 10px var(--glow-color); }
-        .footer-terminal { font-family: 'Share Tech Mono', monospace; font-size: 14px; color: #33ff33; text-shadow: 0 0 5px #33ff33; }
-        .footer-terminal::before { content: 'root@gr23vy:~# '; color: var(--error-color); }
-        .blinking-cursor { animation: blink 1s step-end infinite; }
-        @keyframes blink { from, to { color: transparent; } 50% { color: #33ff33; } }
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 100; }
-        .modal-content { border: 2px solid var(--main-color); padding: 2rem; background: var(--bg-color); text-align: center; box-shadow: 0 0 20px var(--glow-color); }
-        .progress-bar-container { background-color: #222; border: 1px solid var(--main-color); padding: 2px; cursor: pointer; }
-        .progress-bar { background-color: var(--main-color); height: 10px; width: 0%; box-shadow: 0 0 5px var(--glow-color); }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%; height: 6px; cursor: pointer; background: var(--surface-color); border-radius: 3px; border: 1px solid #333;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            border: 2px solid var(--bg-color);
+            height: 20px; width: 20px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            cursor: pointer;
+            margin-top: -8px;
+            transition: background 0.2s ease-in-out;
+        }
+         input[type=range]:hover::-webkit-slider-thumb {
+            background: var(--accent-hover-color);
+         }
+        
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(5px); }
+        .modal-content { background: var(--surface-color); border-radius: 12px; padding: 2.5rem; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #333; }
+        
+        .progress-bar-container { background-color: var(--surface-color); border-radius: 5px; padding: 2px; cursor: pointer; border: 1px solid #333; }
+        .progress-bar { background-color: var(--accent-color); height: 8px; width: 0%; border-radius: 3px; transition: width 0.1s linear; }
     </style>
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen p-4 text-center">
 
     <div class="w-full max-w-lg">
         <header class="mb-8">
-            <h1 class="text-6xl md:text-8xl font-bold glitch" data-text="gr23vy">gr23vy</h1>
-            <p class="text-lg text-cyan-400 mt-2" style="text-shadow: 0 0 5px var(--secondary-glow);">// AN ARCHIVE.VALLEY PROJECT //</p>
+            <h1 class="text-6xl md:text-7xl tracking-tighter glitch" data-text="gr23vy">gr23vy</h1>
+            <p class="text-lg text-secondary-text-color mt-2">// AN ARCHIVE.VALLEY PROJECT //</p>
         </header>
 
         <section id="songCountSection">
-            <h2 class="text-2xl mb-6 tracking-widest">// SELECT SETLIST LENGTH //</h2>
+            <h2 class="text-2xl mb-6 font-bold tracking-tight">// SELECT SETLIST LENGTH //</h2>
             <div class="flex justify-center space-x-2 md:space-x-4">
                 <button class="count-box" data-count="1">1</button>
                 <button class="count-box" data-count="2">2</button>
@@ -69,63 +161,63 @@
         </section>
 
         <section id="trackSelectionSection" class="hidden">
-            <h2 class="text-2xl mb-2 tracking-widest">// CONSTRUCT YOUR SETLIST //</h2>
-            <p class="mb-4 text-sm text-cyan-400">SELECT <span id="tracksToSelect"></span> TRACK(S) IN ORDER</p>
+            <h2 class="text-2xl mb-2 font-bold tracking-tight">// CONSTRUCT YOUR SETLIST //</h2>
+            <p class="mb-4 text-sm text-secondary-text-color">SELECT <span id="tracksToSelect"></span> TRACK(S) IN ORDER</p>
             <div id="tracklist" class="grid grid-cols-1 gap-4 mb-6"></div>
-            <div id="selectedTracksDisplay" class="mb-4 p-2 border-2 border-dashed border-cyan-400 min-h-[50px]"></div>
-            <button id="resetSelection" class="action-button" style="border-color: var(--error-color); color: var(--error-color);">RESET</button>
+            <div id="selectedTracksDisplay" class="mb-4 p-4 bg-surface-color rounded-lg min-h-[50px]"></div>
+            <button id="resetSelection" class="action-button border-red-500 text-red-500 hover:bg-red-500 hover:border-red-500 hover:text-white">RESET</button>
         </section>
 
         <section id="setlistActionsSection" class="hidden">
-            <h2 class="text-2xl mb-6 tracking-widest">// SETLIST LOCKED IN //</h2>
-            <div id="finalSetlist" class="mb-6 text-left p-4 border border-cyan-400 max-w-xs mx-auto"></div>
+            <h2 class="text-2xl mb-6 font-bold tracking-tight">// SETLIST LOCKED IN //</h2>
+            <div id="finalSetlist" class="mb-6 text-left p-4 bg-surface-color rounded-lg max-w-xs mx-auto font-mono"></div>
             <div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4">
-                <button id="playLiveBtn" class="action-button w-full md:w-auto">PLAY LIVE (STEM MIXER)</button>
-                <button id="downloadZipBtn" class="action-button w-full md:w-auto">DOWNLOAD .ZIP (MASTER)</button>
+                <button id="playLiveBtn" class="action-button w-full md:w-auto">PLAY LIVE</button>
+                <button id="downloadZipBtn" class="action-button w-full md:w-auto">DOWNLOAD .ZIP</button>
             </div>
-            <button id="actionsResetBtn" class="action-button mt-6" style="font-size: 16px; padding: 8px 16px; border-color: var(--error-color); color:var(--error-color);">&lt;-- Start Over</button>
+            <button id="actionsResetBtn" class="action-button mt-6 text-sm py-2 px-4 border-secondary-text-color text-secondary-text-color hover:bg-secondary-text-color hover:border-secondary-text-color hover:text-bg-color">&lt;-- Start Over</button>
         </section>
 
         <section id="livePlayerSection" class="hidden">
-            <div id="playerLoading" class="text-xl tracking-widest animate-pulse">LOADING STEMS...</div>
+            <div id="playerLoading" class="text-xl tracking-widest animate-pulse">LOADING...</div>
             <div id="playerControls" class="hidden">
-                <div class="border-2 border-dashed border-cyan-400 p-4 mb-6">
-                    <div id="nowPlayingDisplay" class="text-xl tracking-widest">NOW PLAYING: --</div>
-                    <div id="upNextDisplay" class="text-md text-cyan-400">UP NEXT: --</div>
+                <div class="bg-surface-color p-4 rounded-lg mb-6">
+                    <div id="nowPlayingDisplay" class="text-xl font-bold tracking-tight">--</div>
+                    <div id="upNextDisplay" class="text-md text-secondary-text-color">--</div>
                 </div>
                 
                  <div class="w-full max-w-sm mx-auto mb-4">
-                    <div class="progress-bar-container" id="progressBarContainer">
-                        <div class="progress-bar" id="progressBar"></div>
-                    </div>
-                    <div class="flex justify-between text-cyan-400 text-sm font-mono" >
+                    <div class="progress-bar-container" id="progressBarContainer"> <div class="progress-bar" id="progressBar"></div> </div>
+                    <div class="flex justify-between text-secondary-text-color text-sm font-mono mt-1" >
                         <span id="currentTimeDisplay">0:00</span>
                         <span id="durationDisplay">0:00</span>
                     </div>
                 </div>
 
                 <div class="flex justify-center items-center space-x-4 mb-8">
-                    <button id="prevTrackBtn" class="playback-button p-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
-                    <button id="playPauseBtn" class="playback-button p-2"><svg id="playIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><svg id="pauseIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="hidden"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg></button>
-                    <button id="nextTrackBtn" class="playback-button p-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
+                    <button id="prevTrackBtn" class="playback-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
+                    <button id="playPauseBtn" class="playback-button !p-4 !bg-accent-color !border-accent-color hover:!bg-accent-hover-color hover:!border-accent-hover-color"><svg id="playIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><svg id="pauseIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="hidden"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg></button>
+                    <button id="nextTrackBtn" class="playback-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
                 </div>
 
-                <div class="space-y-6 max-w-sm mx-auto">
-                    <div class="mixer-control text-left"><label for="vocals" class="text-xl tracking-wider">VOCALS</label><input type="range" class="volume-slider" id="vocals" data-stem="vocals" min="0" max="100" value="100"></div>
-                    <div class="mixer-control text-left"><label for="music" class="text-xl tracking-wider">MUSIC</label><input type="range" class="volume-slider" id="music" data-stem="music" min="0" max="100" value="100"></div>
-                    <div class="mixer-control text-left"><label for="drums" class="text-xl tracking-wider">DRUMS</label><input type="range" class="volume-slider" id="drums" data-stem="drums" min="0" max="100" value="100"></div>
-                    <div class="mixer-control text-left"><label for="bass" class="text-xl tracking-wider">BASS</label><input type="range" class="volume-slider" id="bass" data-stem="bass" min="0" max="100" value="100"></div>
+                <div class="space-y-4 max-w-sm mx-auto">
+                    <div class="mixer-control text-left"><label for="vocals" class="text-lg font-bold tracking-tight">VOCALS</label><input type="range" class="volume-slider" id="vocals" data-stem="vocals" min="0" max="100" value="100"></div>
+                    <div class="mixer-control text-left"><label for="music" class="text-lg font-bold tracking-tight">MUSIC</label><input type="range" class="volume-slider" id="music" data-stem="music" min="0" max="100" value="100"></div>
+                    <div class="mixer-control text-left"><label for="drums" class="text-lg font-bold tracking-tight">DRUMS</label><input type="range" class="volume-slider" id="drums" data-stem="drums" min="0" max="100" value="100"></div>
+                    <div class="mixer-control text-left"><label for="bass" class="text-lg font-bold tracking-tight">BASS</label><input type="range" class="volume-slider" id="bass" data-stem="bass" min="0" max="100" value="100"></div>
                 </div>
-                <button id="playerResetBtn" class="action-button mt-8" style="font-size: 16px; padding: 8px 16px; border-color: var(--error-color); color:var(--error-color);">&lt;-- Back to Setlist</button>
+                <button id="playerResetBtn" class="action-button mt-8 text-sm py-2 px-4 border-secondary-text-color text-secondary-text-color hover:bg-secondary-text-color hover:border-secondary-text-color hover:text-bg-color">&lt;-- Back to Setlist</button>
             </div>
         </section>
     </div>
     
-    <div id="loadingModal" class="modal hidden"><div class="modal-content"><h3 class="text-2xl animate-pulse">PREPARING DOWNLOAD...</h3><p class="text-cyan-400 mt-2">Zipping master tracks. Please wait.</p></div></div>
+    <div id="loadingModal" class="modal hidden"><div class="modal-content"><h3 class="text-2xl animate-pulse">PREPARING DOWNLOAD...</h3><p class="text-secondary-text-color mt-2">Zipping master tracks.</p></div></div>
     
     <audio id="audioVocals"></audio> <audio id="audioMusic"></audio> <audio id="audioDrums"></audio> <audio id="audioBass"></audio>
 
-    <footer class="absolute bottom-4 left-4 footer-terminal"><span>CONNECTION ESTABLISHED... STATUS: SECURE</span><span class="blinking-cursor">_</span></footer>
+    <footer class="absolute bottom-4 text-center w-full text-secondary-text-color text-sm">
+        <span>GR23VY SETLIST // 2025 // ARCHIVE.VALLEY</span>
+    </footer>
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -136,6 +228,7 @@
         const playIcon = document.getElementById('playIcon'), pauseIcon = document.getElementById('pauseIcon');
         const progressBar = document.getElementById('progressBar'), progressBarContainer = document.getElementById('progressBarContainer');
         const currentTimeDisplay = document.getElementById('currentTimeDisplay'), durationDisplay = document.getElementById('durationDisplay');
+        const glitchHeader = document.querySelector('.glitch');
 
         let desiredSongCount = 0, selectedTracks = [], currentTrackIndex = 0, isPlaying = false;
         let mixerLevels = { vocals: 1, music: 1, drums: 1, bass: 1 };
@@ -148,14 +241,15 @@
             document.querySelectorAll('.count-box.selected').forEach(b => b.classList.remove('selected'));
             showSection('count');
         };
-
-        const glitchHeader = document.querySelector('.glitch');
+        
+        // Glitch Header Animation
         const nameVariations = ['gr23vy', 'GROOVY', 'GR23VY', 'groovy'];
         setInterval(() => {
             const currentName = glitchHeader.textContent;
             const otherOptions = nameVariations.filter(name => name !== currentName);
             const newName = otherOptions[Math.floor(Math.random() * otherOptions.length)];
-            glitchHeader.textContent = newName; glitchHeader.setAttribute('data-text', newName);
+            glitchHeader.textContent = newName;
+            glitchHeader.setAttribute('data-text', newName);
         }, 3000);
 
         const ALL_SONGS = [
@@ -201,7 +295,7 @@
         const updateTrackSelectionUI = () => {
             const selectedIds = selectedTracks.map(s => s.id);
             document.querySelectorAll('.track-box').forEach(b => { b.classList.toggle('selected', selectedIds.includes(b.dataset.songId)); b.disabled = selectedIds.includes(b.dataset.songId); });
-            document.getElementById('selectedTracksDisplay').innerHTML = selectedTracks.map((t, i) => `<div class="text-cyan-400">${i + 1}. ${t.displayName}</div>`).join('');
+            document.getElementById('selectedTracksDisplay').innerHTML = selectedTracks.map((t, i) => `<div>${i + 1}. ${t.displayName}</div>`).join('');
         };
         document.getElementById('resetSelection').addEventListener('click', () => (selectedTracks = [], setupTrackSelection()));
         
@@ -222,7 +316,7 @@
         const formatTime = (seconds) => {
             const minutes = Math.floor(seconds / 60);
             const secs = Math.floor(seconds % 60);
-            return `${minutes}:${secs.toString().padStart(2, '0')}`;
+            return isNaN(minutes) || isNaN(secs) ? '0:00' : `${minutes}:${secs.toString().padStart(2, '0')}`;
         };
 
         const loadTrack = (index) => {
@@ -270,21 +364,26 @@
         nextTrackBtn.addEventListener('click', () => { if(currentTrackIndex < selectedTracks.length - 1) { currentTrackIndex++; loadTrack(currentTrackIndex); } });
         prevTrackBtn.addEventListener('click', () => { if(currentTrackIndex > 0) { currentTrackIndex--; loadTrack(currentTrackIndex); } });
 
-        audioPlayers.music.addEventListener('ended', () => { isPlaying = false; updatePlayPauseIcon(false); });
+        audioPlayers.music.addEventListener('ended', () => {
+            isPlaying = false;
+            updatePlayPauseIcon(false);
+            if(currentTrackIndex < selectedTracks.length - 1) {
+                currentTrackIndex++;
+                loadTrack(currentTrackIndex);
+            }
+        });
 
         audioPlayers.music.addEventListener('timeupdate', () => {
             const { currentTime, duration } = audioPlayers.music;
             if (isNaN(duration)) return;
-            // Update progress bar and time displays
             const progressPercent = (currentTime / duration) * 100;
             progressBar.style.width = `${progressPercent}%`;
             currentTimeDisplay.textContent = formatTime(currentTime);
 
-            // Sync other stems to the music stem (the master clock)
             for (const stemKey in audioPlayers) {
                 if (stemKey !== 'music') {
                     const slavePlayer = audioPlayers[stemKey];
-                    if (Math.abs(slavePlayer.currentTime - currentTime) > 0.15) { // Sync if drift is > 150ms
+                    if (Math.abs(slavePlayer.currentTime - currentTime) > 0.15) {
                         slavePlayer.currentTime = currentTime;
                     }
                 }
