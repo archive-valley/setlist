@@ -56,21 +56,13 @@
             animation: glitch-anim-2 3s infinite linear alternate-reverse;
         }
         @keyframes glitch-skew {
-          0% { transform: skew(0deg); }
-          5% { transform: skew(1deg); }
-          10% { transform: skew(-0.5deg); }
-          /* ... more steps ... */
-          100% { transform: skew(0deg); }
+          0% { transform: skew(0deg); } 5% { transform: skew(1deg); } 10% { transform: skew(-0.5deg); } 15% { transform: skew(0.8deg); } 20% { transform: skew(-0.2deg); } 100% { transform: skew(0deg); }
         }
         @keyframes glitch-anim {
-          0% { clip: rect(22px, 9999px, 98px, 0); transform: skew(0.2deg); }
-          /* ... more steps ... */
-          100% { clip: rect(84px, 9999px, 3px, 0); transform: skew(0.4deg); }
+          0% { clip: rect(22px, 9999px, 98px, 0); transform: skew(0.2deg); } 20% { clip: rect(75px, 9999px, 60px, 0); transform: skew(0.5deg); } 40% { clip: rect(5px, 9999px, 82px, 0); transform: skew(0.1deg); } 60% { clip: rect(90px, 9999px, 12px, 0); transform: skew(0.8deg); } 80% { clip: rect(30px, 9999px, 70px, 0); transform: skew(0.3deg); } 100% { clip: rect(84px, 9999px, 3px, 0); transform: skew(0.4deg); }
         }
         @keyframes glitch-anim-2 {
-          0% { clip: rect(5px, 9999px, 82px, 0); transform: skew(0.3deg); }
-          /* ... more steps ... */
-          100% { clip: rect(42px, 9999px, 98px, 0); transform: skew(0.2deg); }
+          0% { clip: rect(5px, 9999px, 82px, 0); transform: skew(0.3deg); } 20% { clip: rect(60px, 9999px, 25px, 0); transform: skew(0.6deg); } 40% { clip: rect(12px, 9999px, 90px, 0); transform: skew(0.2deg); } 60% { clip: rect(70px, 9999px, 30px, 0); transform: skew(0.7deg); } 80% { clip: rect(92px, 9999px, 8px, 0); transform: skew(0.1deg); } 100% { clip: rect(42px, 9999px, 98px, 0); transform: skew(0.2deg); }
         }
 
 
@@ -265,9 +257,9 @@
                 document.querySelectorAll('.count-box.selected').forEach(b => b.classList.remove('selected'));
                 e.target.classList.add('selected');
                 desiredSongCount = parseInt(e.target.dataset.count, 10);
-                selectedTracks = (desiredSongCount === 5) ? [...ALL_SONGS] : [];
-                if (desiredSongCount === 5) { renderFinalSetlist(); showSection('actions'); }
-                else { setupTrackSelection(); showSection('selection'); }
+                selectedTracks = [];
+                setupTrackSelection();
+                showSection('selection');
             }
         });
 
@@ -344,7 +336,7 @@
             Promise.all(stemPromises).then(() => {
                 document.getElementById('playerLoading').classList.add('hidden');
                 document.getElementById('playerControls').classList.remove('hidden');
-                document.getElementById('nowPlayingDisplay').textContent = `PRESS PLAY: ${track.displayName}`;
+                document.getElementById('nowPlayingDisplay').textContent = track.displayName;
                 const nextTrack = selectedTracks[index + 1];
                 document.getElementById('upNextDisplay').textContent = nextTrack ? `UP NEXT: ${nextTrack.displayName}` : 'UP NEXT: --END--';
                 durationDisplay.textContent = formatTime(audioPlayers.music.duration);
