@@ -45,6 +45,8 @@
         @keyframes blink { from, to { color: transparent; } 50% { color: #33ff33; } }
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 100; }
         .modal-content { border: 2px solid var(--main-color); padding: 2rem; background: var(--bg-color); text-align: center; box-shadow: 0 0 20px var(--glow-color); }
+        .progress-bar-container { background-color: #222; border: 1px solid var(--main-color); padding: 2px; cursor: pointer; }
+        .progress-bar { background-color: var(--main-color); height: 10px; width: 0%; box-shadow: 0 0 5px var(--glow-color); }
     </style>
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen p-4 text-center">
@@ -92,6 +94,16 @@
                     <div id="upNextDisplay" class="text-md text-cyan-400">UP NEXT: --</div>
                 </div>
                 
+                 <div class="w-full max-w-sm mx-auto mb-4">
+                    <div class="progress-bar-container" id="progressBarContainer">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                    <div class="flex justify-between text-cyan-400 text-sm font-mono" >
+                        <span id="currentTimeDisplay">0:00</span>
+                        <span id="durationDisplay">0:00</span>
+                    </div>
+                </div>
+
                 <div class="flex justify-center items-center space-x-4 mb-8">
                     <button id="prevTrackBtn" class="playback-button p-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
                     <button id="playPauseBtn" class="playback-button p-2"><svg id="playIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><svg id="pauseIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="hidden"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg></button>
@@ -120,44 +132,32 @@
         const sections = { count: document.getElementById('songCountSection'), selection: document.getElementById('trackSelectionSection'), actions: document.getElementById('setlistActionsSection'), player: document.getElementById('livePlayerSection'), };
         const audioPlayers = { vocals: document.getElementById('audioVocals'), music: document.getElementById('audioMusic'), drums: document.getElementById('audioDrums'), bass: document.getElementById('audioBass'), };
         
-        // Player UI
-        const playPauseBtn = document.getElementById('playPauseBtn');
-        const nextTrackBtn = document.getElementById('nextTrackBtn');
-        const prevTrackBtn = document.getElementById('prevTrackBtn');
-        const playIcon = document.getElementById('playIcon');
-        const pauseIcon = document.getElementById('pauseIcon');
-        
-        // State
-        let desiredSongCount = 0;
-        let selectedTracks = [];
-        let currentTrackIndex = 0;
-        let isPlaying = false;
+        const playPauseBtn = document.getElementById('playPauseBtn'), nextTrackBtn = document.getElementById('nextTrackBtn'), prevTrackBtn = document.getElementById('prevTrackBtn');
+        const playIcon = document.getElementById('playIcon'), pauseIcon = document.getElementById('pauseIcon');
+        const progressBar = document.getElementById('progressBar'), progressBarContainer = document.getElementById('progressBarContainer');
+        const currentTimeDisplay = document.getElementById('currentTimeDisplay'), durationDisplay = document.getElementById('durationDisplay');
+
+        let desiredSongCount = 0, selectedTracks = [], currentTrackIndex = 0, isPlaying = false;
         let mixerLevels = { vocals: 1, music: 1, drums: 1, bass: 1 };
         
-        // --- Core Functions ---
         const showSection = (name) => Object.entries(sections).forEach(([key, s]) => s.classList.toggle('hidden', key !== name));
         
         const resetToStart = () => {
-            desiredSongCount = 0;
-            selectedTracks = [];
-            currentTrackIndex = 0;
+            desiredSongCount = 0; selectedTracks = []; currentTrackIndex = 0;
             stopAllPlayback();
             document.querySelectorAll('.count-box.selected').forEach(b => b.classList.remove('selected'));
             showSection('count');
         };
 
-        // Name Animation
         const glitchHeader = document.querySelector('.glitch');
         const nameVariations = ['gr23vy', 'GROOVY', 'GR23VY', 'groovy'];
         setInterval(() => {
             const currentName = glitchHeader.textContent;
             const otherOptions = nameVariations.filter(name => name !== currentName);
             const newName = otherOptions[Math.floor(Math.random() * otherOptions.length)];
-            glitchHeader.textContent = newName;
-            glitchHeader.setAttribute('data-text', newName);
+            glitchHeader.textContent = newName; glitchHeader.setAttribute('data-text', newName);
         }, 3000);
 
-        // --- Song Database ---
         const ALL_SONGS = [
             { id: 'DontCryForMe', displayName: 'Dont Cry For Me', mainMix: 'DontCryForMe/DontCryForMe.mp3', stems: { vocals: 'DontCryForMe/DontCryForMe[vocals].mp3', music: 'DontCryForMe/DontCryForMe[music].mp3', drums: 'DontCryForMe/DontCryForMe[drums].mp3', bass: 'DontCryForMe/DontCryForMe[bass].mp3' } },
             { id: 'Intro', displayName: 'Intro', mainMix: 'Intro/Intro.mp3', stems: { vocals: 'Intro/Intro[vocals].mp3', music: 'Intro/Intro[music].mp3', drums: 'Intro/Intro[drums].mp3', bass: 'Intro/Intro[bass].mp3' } },
@@ -166,21 +166,14 @@
             { id: 'suave', displayName: 'Suave', mainMix: 'suave/suave.mp3', stems: { vocals: 'suave/suave[vocals].mp3', music: 'suave/suave[music].mp3', drums: 'suave/suave[drums].mp3', bass: 'suave/suave[bass].mp3' } }
         ];
 
-        // --- Step 1 & 2: Setlist Creation ---
         sections.count.addEventListener('click', (e) => {
             if (e.target.classList.contains('count-box')) {
                 document.querySelectorAll('.count-box.selected').forEach(b => b.classList.remove('selected'));
                 e.target.classList.add('selected');
                 desiredSongCount = parseInt(e.target.dataset.count, 10);
-                selectedTracks = [];
-                if (desiredSongCount === 5) {
-                    selectedTracks = [...ALL_SONGS];
-                    renderFinalSetlist();
-                    showSection('actions');
-                } else {
-                    setupTrackSelection();
-                    showSection('selection');
-                }
+                selectedTracks = (desiredSongCount === 5) ? [...ALL_SONGS] : [];
+                if (desiredSongCount === 5) { renderFinalSetlist(); showSection('actions'); }
+                else { setupTrackSelection(); showSection('selection'); }
             }
         });
 
@@ -190,9 +183,7 @@
             tracklistContainer.innerHTML = '';
             ALL_SONGS.forEach(song => {
                 const button = document.createElement('button');
-                button.className = 'track-box';
-                button.textContent = song.displayName;
-                button.dataset.songId = song.id;
+                button.className = 'track-box'; button.textContent = song.displayName; button.dataset.songId = song.id;
                 tracklistContainer.appendChild(button);
             });
             updateTrackSelectionUI();
@@ -203,51 +194,39 @@
             if (target && !target.classList.contains('selected') && selectedTracks.length < desiredSongCount) {
                 selectedTracks.push(ALL_SONGS.find(s => s.id === target.dataset.songId));
                 updateTrackSelectionUI();
-                if (selectedTracks.length === desiredSongCount) {
-                    setTimeout(() => {
-                        renderFinalSetlist();
-                        showSection('actions');
-                    }, 500);
-                }
+                if (selectedTracks.length === desiredSongCount) { setTimeout(() => { renderFinalSetlist(); showSection('actions'); }, 500); }
             }
         });
 
         const updateTrackSelectionUI = () => {
             const selectedIds = selectedTracks.map(s => s.id);
-            document.querySelectorAll('.track-box').forEach(b => {
-                b.classList.toggle('selected', selectedIds.includes(b.dataset.songId));
-                b.disabled = selectedIds.includes(b.dataset.songId);
-            });
+            document.querySelectorAll('.track-box').forEach(b => { b.classList.toggle('selected', selectedIds.includes(b.dataset.songId)); b.disabled = selectedIds.includes(b.dataset.songId); });
             document.getElementById('selectedTracksDisplay').innerHTML = selectedTracks.map((t, i) => `<div class="text-cyan-400">${i + 1}. ${t.displayName}</div>`).join('');
         };
         document.getElementById('resetSelection').addEventListener('click', () => (selectedTracks = [], setupTrackSelection()));
         
-        // --- Step 3: Actions ---
-        const renderFinalSetlist = () => {
-            document.getElementById('finalSetlist').innerHTML = selectedTracks.map((t, i) => `<p>${i + 1}. ${t.displayName}</p>`).join('');
-        };
+        const renderFinalSetlist = () => { document.getElementById('finalSetlist').innerHTML = selectedTracks.map((t, i) => `<p>${i + 1}. ${t.displayName}</p>`).join(''); };
         document.getElementById('playLiveBtn').addEventListener('click', () => { showSection('player'); loadTrack(currentTrackIndex); });
         document.getElementById('downloadZipBtn').addEventListener('click', downloadZip);
         document.getElementById('actionsResetBtn').addEventListener('click', resetToStart);
 
-        // --- Step 4: Live Player ---
         const stopAllPlayback = () => Object.values(audioPlayers).forEach(p => { p.pause(); p.currentTime = 0; });
-        
-        const updatePlayPauseIcon = (playing) => {
-            playIcon.classList.toggle('hidden', playing);
-            pauseIcon.classList.toggle('hidden', !playing);
-        };
+        const updatePlayPauseIcon = (playing) => { playIcon.classList.toggle('hidden', playing); pauseIcon.classList.toggle('hidden', !playing); };
         
         const togglePlayPause = () => {
             isPlaying = !isPlaying;
             Object.values(audioPlayers).forEach(p => isPlaying ? p.play() : p.pause());
             updatePlayPauseIcon(isPlaying);
         };
+        
+        const formatTime = (seconds) => {
+            const minutes = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${minutes}:${secs.toString().padStart(2, '0')}`;
+        };
 
         const loadTrack = (index) => {
-            stopAllPlayback();
-            isPlaying = false;
-            updatePlayPauseIcon(false);
+            stopAllPlayback(); isPlaying = false; updatePlayPauseIcon(false);
             
             document.getElementById('playerControls').classList.add('hidden');
             document.getElementById('playerLoading').classList.remove('hidden');
@@ -255,17 +234,16 @@
             const track = selectedTracks[index];
             if (!track) return;
 
-            document.getElementById('nowPlayingDisplay').textContent = `NOW PLAYING: ${track.displayName}`;
-            const nextTrack = selectedTracks[index + 1];
-            document.getElementById('upNextDisplay').textContent = nextTrack ? `UP NEXT: ${nextTrack.displayName}` : 'UP NEXT: --END--';
+            document.getElementById('nowPlayingDisplay').textContent = `...LOADING...`;
+            document.getElementById('upNextDisplay').textContent = `...`;
+            progressBar.style.width = '0%'; currentTimeDisplay.textContent = '0:00'; durationDisplay.textContent = '0:00';
 
             const stemPromises = Object.keys(audioPlayers).map(stemKey => {
                 return new Promise((resolve, reject) => {
                     const player = audioPlayers[stemKey];
                     player.src = track.stems[stemKey];
                     player.volume = mixerLevels[stemKey];
-                    player.oncanplaythrough = resolve;
-                    player.onerror = reject;
+                    player.oncanplaythrough = resolve; player.onerror = reject;
                 });
             });
 
@@ -273,6 +251,9 @@
                 document.getElementById('playerLoading').classList.add('hidden');
                 document.getElementById('playerControls').classList.remove('hidden');
                 document.getElementById('nowPlayingDisplay').textContent = `PRESS PLAY: ${track.displayName}`;
+                const nextTrack = selectedTracks[index + 1];
+                document.getElementById('upNextDisplay').textContent = nextTrack ? `UP NEXT: ${nextTrack.displayName}` : 'UP NEXT: --END--';
+                durationDisplay.textContent = formatTime(audioPlayers.music.duration);
                 updatePlaybackButtons();
             }).catch(err => {
                 console.error("Error loading stems:", err);
@@ -289,9 +270,34 @@
         nextTrackBtn.addEventListener('click', () => { if(currentTrackIndex < selectedTracks.length - 1) { currentTrackIndex++; loadTrack(currentTrackIndex); } });
         prevTrackBtn.addEventListener('click', () => { if(currentTrackIndex > 0) { currentTrackIndex--; loadTrack(currentTrackIndex); } });
 
-        audioPlayers.music.addEventListener('ended', () => {
-            isPlaying = false;
-            updatePlayPauseIcon(false);
+        audioPlayers.music.addEventListener('ended', () => { isPlaying = false; updatePlayPauseIcon(false); });
+
+        audioPlayers.music.addEventListener('timeupdate', () => {
+            const { currentTime, duration } = audioPlayers.music;
+            if (isNaN(duration)) return;
+            // Update progress bar and time displays
+            const progressPercent = (currentTime / duration) * 100;
+            progressBar.style.width = `${progressPercent}%`;
+            currentTimeDisplay.textContent = formatTime(currentTime);
+
+            // Sync other stems to the music stem (the master clock)
+            for (const stemKey in audioPlayers) {
+                if (stemKey !== 'music') {
+                    const slavePlayer = audioPlayers[stemKey];
+                    if (Math.abs(slavePlayer.currentTime - currentTime) > 0.15) { // Sync if drift is > 150ms
+                        slavePlayer.currentTime = currentTime;
+                    }
+                }
+            }
+        });
+        
+        progressBarContainer.addEventListener('click', (e) => {
+            const width = progressBarContainer.clientWidth;
+            const clickX = e.offsetX;
+            const duration = audioPlayers.music.duration;
+            if(isNaN(duration)) return;
+            const newTime = (clickX / width) * duration;
+            Object.values(audioPlayers).forEach(p => p.currentTime = newTime);
         });
 
         document.querySelectorAll('.volume-slider').forEach(slider => {
@@ -305,7 +311,6 @@
 
         document.getElementById('playerResetBtn').addEventListener('click', () => { stopAllPlayback(); showSection('actions'); });
         
-        // --- ZIP Functionality ---
         async function downloadZip() {
             document.getElementById('loadingModal').classList.remove('hidden');
             const zip = new JSZip();
@@ -319,19 +324,14 @@
                 }
                 const content = await zip.generateAsync({ type: "blob" });
                 const link = document.createElement("a");
-                link.href = URL.createObjectURL(content);
-                link.download = "gr23vy_setlist.zip";
-                link.click();
-                URL.revokeObjectURL(link.href);
+                link.href = URL.createObjectURL(content); link.download = "gr23vy_setlist.zip"; link.click(); URL.revokeObjectURL(link.href);
             } catch (error) {
-                console.error("Error creating zip file:", error);
-                alert("Failed to create zip file. Make sure tracks are in the correct directory.");
+                console.error("Error creating zip file:", error); alert("Failed to create zip file. Make sure tracks are in the correct directory.");
             } finally {
                 document.getElementById('loadingModal').classList.add('hidden');
             }
         }
         
-        // --- Initial State ---
         showSection('count');
     });
     </script>
