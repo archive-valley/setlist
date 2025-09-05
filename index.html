@@ -41,7 +41,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: var(--bg-color); /* Match the body background */
+            background: var(--bg-color);
         }
         .glitch::before {
             left: 2px;
@@ -65,8 +65,7 @@
           0% { clip: rect(5px, 9999px, 82px, 0); transform: skew(0.3deg); } 20% { clip: rect(60px, 9999px, 25px, 0); transform: skew(0.6deg); } 40% { clip: rect(12px, 9999px, 90px, 0); transform: skew(0.2deg); } 60% { clip: rect(70px, 9999px, 30px, 0); transform: skew(0.7deg); } 80% { clip: rect(92px, 9999px, 8px, 0); transform: skew(0.1deg); } 100% { clip: rect(42px, 9999px, 98px, 0); transform: skew(0.2deg); }
         }
 
-
-        .action-button, .count-box, .track-box, .playback-button {
+        .action-button, .count-box, .track-box {
             background-color: transparent;
             border: 2px solid var(--secondary-text-color);
             color: var(--primary-text-color);
@@ -80,7 +79,7 @@
             cursor: pointer;
         }
 
-        .action-button:hover, .count-box:hover, .track-box:hover, .playback-button:hover {
+        .action-button:hover, .count-box:hover, .track-box:hover {
             background-color: var(--accent-color);
             border-color: var(--accent-color);
             color: var(--primary-text-color);
@@ -93,44 +92,11 @@
              border-color: var(--accent-color);
              box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
         }
-        
-        .playback-button { padding: 12px; line-height: 0; }
-        .playback-button:disabled { transform: none; box-shadow: none; background-color: transparent; border-color: #444; cursor: not-allowed; }
-        .playback-button:disabled svg { fill: #444; }
-        .playback-button svg { fill: var(--primary-text-color); width: 24px; height: 24px; transition: fill 0.2s ease-in-out; }
-        .playback-button:hover svg { fill: var(--primary-text-color); }
 
         .hidden { display: none; }
-
-        input[type=range] {
-            -webkit-appearance: none;
-            width: 100%;
-            background: transparent;
-            margin: 10px 0;
-        }
-        input[type=range]:focus { outline: none; }
-        input[type=range]::-webkit-slider-runnable-track {
-            width: 100%; height: 6px; cursor: pointer; background: var(--surface-color); border-radius: 3px; border: 1px solid #333;
-        }
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            border: 2px solid var(--bg-color);
-            height: 20px; width: 20px;
-            border-radius: 50%;
-            background: var(--accent-color);
-            cursor: pointer;
-            margin-top: -8px;
-            transition: background 0.2s ease-in-out;
-        }
-         input[type=range]:hover::-webkit-slider-thumb {
-            background: var(--accent-hover-color);
-         }
         
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(5px); }
-        .modal-content { background: var(--surface-color); border-radius: 12px; padding: 2.5rem; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #333; }
-        
-        .progress-bar-container { background-color: var(--surface-color); border-radius: 5px; padding: 2px; cursor: pointer; border: 1px solid #333; }
-        .progress-bar { background-color: var(--accent-color); height: 8px; width: 0%; border-radius: 3px; transition: width 0.1s linear; }
+        .modal-content { background: var(--surface-color); border-radius: 12px; padding: 2.5rem; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #333; max-width: 400px; }
     </style>
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen p-4 text-center">
@@ -138,6 +104,7 @@
     <div class="w-full max-w-lg">
         <header class="mb-8">
             <h1 class="text-6xl md:text-7xl tracking-tighter glitch" data-text="gr23vy">gr23vy</h1>
+            <p class="text-lg text-secondary-text-color mt-2">ARCHIVE.VALLEY</p>
         </header>
 
         <section id="songCountSection">
@@ -160,73 +127,55 @@
         </section>
 
         <section id="setlistActionsSection" class="hidden">
-            <h2 class="text-2xl mb-6 font-bold tracking-tight">// SETLIST LOCKED IN //</h2>
+            <h2 class="text-2xl mb-6 font-bold tracking-tight">// EXPORT SETLIST //</h2>
             <div id="finalSetlist" class="mb-6 text-left p-4 bg-surface-color rounded-lg max-w-xs mx-auto font-mono"></div>
             <div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4">
-                <button id="playLiveBtn" class="action-button w-full md:w-auto">PLAY LIVE</button>
-                <button id="downloadZipBtn" class="action-button w-full md:w-auto">DOWNLOAD .ZIP</button>
+                <button id="downloadMastersBtn" class="action-button w-full md:w-auto">DOWNLOAD MASTERS</button>
+                <button id="downloadStemsBtn" class="action-button w-full md:w-auto">DOWNLOAD STEMS</button>
             </div>
             <button id="actionsResetBtn" class="action-button mt-6 text-sm py-2 px-4 border-secondary-text-color text-secondary-text-color hover:bg-secondary-text-color hover:border-secondary-text-color hover:text-bg-color">&lt;-- Start Over</button>
         </section>
-
-        <section id="livePlayerSection" class="hidden">
-            <div id="playerLoading" class="text-xl tracking-widest animate-pulse">LOADING...</div>
-            <div id="playerControls" class="hidden">
-                <div class="bg-surface-color p-4 rounded-lg mb-6">
-                    <div id="nowPlayingDisplay" class="text-xl font-bold tracking-tight">--</div>
-                    <div id="upNextDisplay" class="text-md text-secondary-text-color">--</div>
-                </div>
-                
-                 <div class="w-full max-w-sm mx-auto mb-4">
-                    <div class="progress-bar-container" id="progressBarContainer"> <div class="progress-bar" id="progressBar"></div> </div>
-                    <div class="flex justify-between text-secondary-text-color text-sm font-mono mt-1" >
-                        <span id="currentTimeDisplay">0:00</span>
-                        <span id="durationDisplay">0:00</span>
-                    </div>
-                </div>
-
-                <div class="flex justify-center items-center space-x-4 mb-8">
-                    <button id="prevTrackBtn" class="playback-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
-                    <button id="playPauseBtn" class="playback-button !p-4 !bg-accent-color !border-accent-color hover:!bg-accent-hover-color hover:!border-accent-hover-color"><svg id="playIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><svg id="pauseIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="hidden"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg></button>
-                    <button id="nextTrackBtn" class="playback-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
-                </div>
-
-                <div class="space-y-4 max-w-sm mx-auto">
-                    <div class="mixer-control text-left"><label for="vocals" class="text-lg font-bold tracking-tight">VOCALS</label><input type="range" class="volume-slider" id="vocals" data-stem="vocals" min="0" max="100" value="100"></div>
-                    <div class="mixer-control text-left"><label for="music" class="text-lg font-bold tracking-tight">MUSIC</label><input type="range" class="volume-slider" id="music" data-stem="music" min="0" max="100" value="100"></div>
-                    <div class="mixer-control text-left"><label for="drums" class="text-lg font-bold tracking-tight">DRUMS</label><input type="range" class="volume-slider" id="drums" data-stem="drums" min="0" max="100" value="100"></div>
-                    <div class="mixer-control text-left"><label for="bass" class="text-lg font-bold tracking-tight">BASS</label><input type="range" class="volume-slider" id="bass" data-stem="bass" min="0" max="100" value="100"></div>
-                </div>
-                <button id="playerResetBtn" class="action-button mt-8 text-sm py-2 px-4 border-secondary-text-color text-secondary-text-color hover:bg-secondary-text-color hover:border-secondary-text-color hover:text-bg-color">&lt;-- Back to Setlist</button>
-            </div>
-        </section>
     </div>
     
-    <div id="loadingModal" class="modal hidden"><div class="modal-content"><h3 class="text-2xl animate-pulse">PREPARING DOWNLOAD...</h3><p class="text-secondary-text-color mt-2">Zipping master tracks.</p></div></div>
+    <div id="loadingModal" class="modal hidden">
+        <div class="modal-content">
+            <h3 class="text-2xl animate-pulse">PREPARING DOWNLOAD...</h3>
+            <p class="text-secondary-text-color mt-2">Zipping files. Please wait.</p>
+        </div>
+    </div>
     
-    <audio id="audioVocals"></audio> <audio id="audioMusic"></audio> <audio id="audioDrums"></audio> <audio id="audioBass"></audio>
+    <div id="confirmModal" class="modal hidden">
+        <div class="modal-content">
+            <h3 class="text-2xl font-bold">Download Stems?</h3>
+            <p class="text-secondary-text-color my-4">This will download all individual stems (vocals, music, etc.) for each selected track, resulting in a larger file size and more files. Are you sure?</p>
+            <div class="flex justify-center space-x-4 mt-6">
+                <button id="confirmCancelBtn" class="action-button text-sm py-2 px-4 border-secondary-text-color text-secondary-text-color hover:bg-secondary-text-color hover:border-secondary-text-color hover:text-bg-color">CANCEL</button>
+                <button id="confirmDownloadBtn" class="action-button text-sm py-2 px-4">CONFIRM</button>
+            </div>
+        </div>
+    </div>
 
 
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const sections = { count: document.getElementById('songCountSection'), selection: document.getElementById('trackSelectionSection'), actions: document.getElementById('setlistActionsSection'), player: document.getElementById('livePlayerSection'), };
-        const audioPlayers = { vocals: document.getElementById('audioVocals'), music: document.getElementById('audioMusic'), drums: document.getElementById('audioDrums'), bass: document.getElementById('audioBass'), };
-        
-        const playPauseBtn = document.getElementById('playPauseBtn'), nextTrackBtn = document.getElementById('nextTrackBtn'), prevTrackBtn = document.getElementById('prevTrackBtn');
-        const playIcon = document.getElementById('playIcon'), pauseIcon = document.getElementById('pauseIcon');
-        const progressBar = document.getElementById('progressBar'), progressBarContainer = document.getElementById('progressBarContainer');
-        const currentTimeDisplay = document.getElementById('currentTimeDisplay'), durationDisplay = document.getElementById('durationDisplay');
+        const sections = {
+            count: document.getElementById('songCountSection'),
+            selection: document.getElementById('trackSelectionSection'),
+            actions: document.getElementById('setlistActionsSection'),
+        };
+        const loadingModal = document.getElementById('loadingModal');
+        const confirmModal = document.getElementById('confirmModal');
         const glitchHeader = document.querySelector('.glitch');
 
-        let desiredSongCount = 0, selectedTracks = [], currentTrackIndex = 0, isPlaying = false;
-        let mixerLevels = { vocals: 1, music: 1, drums: 1, bass: 1 };
-        
+        let desiredSongCount = 0;
+        let selectedTracks = [];
+
         const showSection = (name) => Object.entries(sections).forEach(([key, s]) => s.classList.toggle('hidden', key !== name));
         
         const resetToStart = () => {
-            desiredSongCount = 0; selectedTracks = []; currentTrackIndex = 0;
-            stopAllPlayback();
+            desiredSongCount = 0;
+            selectedTracks = [];
             document.querySelectorAll('.count-box.selected').forEach(b => b.classList.remove('selected'));
             showSection('count');
         };
@@ -266,7 +215,9 @@
             tracklistContainer.innerHTML = '';
             ALL_SONGS.forEach(song => {
                 const button = document.createElement('button');
-                button.className = 'track-box'; button.textContent = song.displayName; button.dataset.songId = song.id;
+                button.className = 'track-box';
+                button.textContent = song.displayName;
+                button.dataset.songId = song.id;
                 tracklistContainer.appendChild(button);
             });
             updateTrackSelectionUI();
@@ -277,146 +228,76 @@
             if (target && !target.classList.contains('selected') && selectedTracks.length < desiredSongCount) {
                 selectedTracks.push(ALL_SONGS.find(s => s.id === target.dataset.songId));
                 updateTrackSelectionUI();
-                if (selectedTracks.length === desiredSongCount) { setTimeout(() => { renderFinalSetlist(); showSection('actions'); }, 500); }
+                if (selectedTracks.length === desiredSongCount) {
+                    setTimeout(() => {
+                        renderFinalSetlist();
+                        showSection('actions');
+                    }, 500);
+                }
             }
         });
 
         const updateTrackSelectionUI = () => {
             const selectedIds = selectedTracks.map(s => s.id);
-            document.querySelectorAll('.track-box').forEach(b => { b.classList.toggle('selected', selectedIds.includes(b.dataset.songId)); b.disabled = selectedIds.includes(b.dataset.songId); });
+            document.querySelectorAll('.track-box').forEach(b => {
+                b.classList.toggle('selected', selectedIds.includes(b.dataset.songId));
+                b.disabled = selectedIds.includes(b.dataset.songId);
+            });
             document.getElementById('selectedTracksDisplay').innerHTML = selectedTracks.map((t, i) => `<div>${i + 1}. ${t.displayName}</div>`).join('');
         };
+
         document.getElementById('resetSelection').addEventListener('click', () => (selectedTracks = [], setupTrackSelection()));
         
-        const renderFinalSetlist = () => { document.getElementById('finalSetlist').innerHTML = selectedTracks.map((t, i) => `<p>${i + 1}. ${t.displayName}</p>`).join(''); };
-        document.getElementById('playLiveBtn').addEventListener('click', () => { showSection('player'); loadTrack(currentTrackIndex); });
-        document.getElementById('downloadZipBtn').addEventListener('click', downloadZip);
+        const renderFinalSetlist = () => {
+            document.getElementById('finalSetlist').innerHTML = selectedTracks.map((t, i) => `<p>${i + 1}. ${t.displayName}</p>`).join('');
+        };
+
+        document.getElementById('downloadMastersBtn').addEventListener('click', () => downloadZip('masters'));
+        document.getElementById('downloadStemsBtn').addEventListener('click', () => confirmModal.classList.remove('hidden'));
+        document.getElementById('confirmCancelBtn').addEventListener('click', () => confirmModal.classList.add('hidden'));
+        document.getElementById('confirmDownloadBtn').addEventListener('click', () => {
+            confirmModal.classList.add('hidden');
+            downloadZip('stems');
+        });
+
         document.getElementById('actionsResetBtn').addEventListener('click', resetToStart);
-
-        const stopAllPlayback = () => Object.values(audioPlayers).forEach(p => { p.pause(); p.currentTime = 0; });
-        const updatePlayPauseIcon = (playing) => { playIcon.classList.toggle('hidden', playing); pauseIcon.classList.toggle('hidden', !playing); };
         
-        const togglePlayPause = () => {
-            isPlaying = !isPlaying;
-            Object.values(audioPlayers).forEach(p => isPlaying ? p.play() : p.pause());
-            updatePlayPauseIcon(isPlaying);
-        };
-        
-        const formatTime = (seconds) => {
-            const minutes = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return isNaN(minutes) || isNaN(secs) ? '0:00' : `${minutes}:${secs.toString().padStart(2, '0')}`;
-        };
-
-        const loadTrack = (index) => {
-            stopAllPlayback(); isPlaying = false; updatePlayPauseIcon(false);
-            
-            document.getElementById('playerControls').classList.add('hidden');
-            document.getElementById('playerLoading').classList.remove('hidden');
-
-            const track = selectedTracks[index];
-            if (!track) return;
-
-            document.getElementById('nowPlayingDisplay').textContent = `...LOADING...`;
-            document.getElementById('upNextDisplay').textContent = `...`;
-            progressBar.style.width = '0%'; currentTimeDisplay.textContent = '0:00'; durationDisplay.textContent = '0:00';
-
-            const stemPromises = Object.keys(audioPlayers).map(stemKey => {
-                return new Promise((resolve, reject) => {
-                    const player = audioPlayers[stemKey];
-                    player.src = track.stems[stemKey];
-                    player.volume = mixerLevels[stemKey];
-                    player.oncanplaythrough = resolve; player.onerror = reject;
-                });
-            });
-
-            Promise.all(stemPromises).then(() => {
-                document.getElementById('playerLoading').classList.add('hidden');
-                document.getElementById('playerControls').classList.remove('hidden');
-                document.getElementById('nowPlayingDisplay').textContent = track.displayName;
-                const nextTrack = selectedTracks[index + 1];
-                document.getElementById('upNextDisplay').textContent = nextTrack ? `UP NEXT: ${nextTrack.displayName}` : 'UP NEXT: --END--';
-                durationDisplay.textContent = formatTime(audioPlayers.music.duration);
-                updatePlaybackButtons();
-            }).catch(err => {
-                console.error("Error loading stems:", err);
-                document.getElementById('nowPlayingDisplay').textContent = "Error loading track.";
-            });
-        };
-
-        const updatePlaybackButtons = () => {
-            prevTrackBtn.disabled = currentTrackIndex === 0;
-            nextTrackBtn.disabled = currentTrackIndex >= selectedTracks.length - 1;
-        };
-
-        playPauseBtn.addEventListener('click', togglePlayPause);
-        nextTrackBtn.addEventListener('click', () => { if(currentTrackIndex < selectedTracks.length - 1) { currentTrackIndex++; loadTrack(currentTrackIndex); } });
-        prevTrackBtn.addEventListener('click', () => { if(currentTrackIndex > 0) { currentTrackIndex--; loadTrack(currentTrackIndex); } });
-
-        audioPlayers.music.addEventListener('ended', () => {
-            isPlaying = false;
-            updatePlayPauseIcon(false);
-            if(currentTrackIndex < selectedTracks.length - 1) {
-                currentTrackIndex++;
-                loadTrack(currentTrackIndex);
-            }
-        });
-
-        audioPlayers.music.addEventListener('timeupdate', () => {
-            const { currentTime, duration } = audioPlayers.music;
-            if (isNaN(duration)) return;
-            const progressPercent = (currentTime / duration) * 100;
-            progressBar.style.width = `${progressPercent}%`;
-            currentTimeDisplay.textContent = formatTime(currentTime);
-
-            for (const stemKey in audioPlayers) {
-                if (stemKey !== 'music') {
-                    const slavePlayer = audioPlayers[stemKey];
-                    if (Math.abs(slavePlayer.currentTime - currentTime) > 0.15) {
-                        slavePlayer.currentTime = currentTime;
-                    }
-                }
-            }
-        });
-        
-        progressBarContainer.addEventListener('click', (e) => {
-            const width = progressBarContainer.clientWidth;
-            const clickX = e.offsetX;
-            const duration = audioPlayers.music.duration;
-            if(isNaN(duration)) return;
-            const newTime = (clickX / width) * duration;
-            Object.values(audioPlayers).forEach(p => p.currentTime = newTime);
-        });
-
-        document.querySelectorAll('.volume-slider').forEach(slider => {
-            slider.addEventListener('input', (e) => {
-                const stem = e.target.dataset.stem;
-                const volume = e.target.value / 100;
-                mixerLevels[stem] = volume;
-                if (audioPlayers[stem]) audioPlayers[stem].volume = volume;
-            });
-        });
-
-        document.getElementById('playerResetBtn').addEventListener('click', () => { stopAllPlayback(); showSection('actions'); });
-        
-        async function downloadZip() {
-            document.getElementById('loadingModal').classList.remove('hidden');
+        async function downloadZip(type = 'masters') {
+            loadingModal.classList.remove('hidden');
             const zip = new JSZip();
             try {
                 for (let i = 0; i < selectedTracks.length; i++) {
                     const track = selectedTracks[i];
-                    const response = await fetch(track.mainMix);
-                    if (!response.ok) throw new Error(`Could not fetch ${track.mainMix}`);
-                    const blob = await response.blob();
-                    zip.file(`${String(i + 1).padStart(2, '0')}-${track.displayName.replace(/ /g, '_')}.mp3`, blob);
+                    const trackName = track.displayName.replace(/ /g, '_');
+                    const paddedIndex = String(i + 1).padStart(2, '0');
+
+                    if (type === 'masters') {
+                        const response = await fetch(track.mainMix);
+                        if (!response.ok) throw new Error(`Could not fetch ${track.mainMix}`);
+                        const blob = await response.blob();
+                        zip.file(`${paddedIndex}-${trackName}.mp3`, blob);
+                    } else if (type === 'stems') {
+                        const trackFolder = zip.folder(`${paddedIndex}-${trackName}`);
+                        for (const stemKey in track.stems) {
+                            const stemPath = track.stems[stemKey];
+                            const response = await fetch(stemPath);
+                            if (!response.ok) throw new Error(`Could not fetch ${stemPath}`);
+                            const blob = await response.blob();
+                            trackFolder.file(`${stemKey}.mp3`, blob);
+                        }
+                    }
                 }
                 const content = await zip.generateAsync({ type: "blob" });
                 const link = document.createElement("a");
-                link.href = URL.createObjectURL(content); link.download = "gr23vy_setlist.zip"; link.click(); URL.revokeObjectURL(link.href);
+                link.href = URL.createObjectURL(content);
+                link.download = `gr23vy_setlist_${type}.zip`;
+                link.click();
+                URL.revokeObjectURL(link.href);
             } catch (error) {
-                console.error("Error creating zip file:", error); alert("Failed to create zip file. Make sure tracks are in the correct directory.");
+                console.error("Error creating zip file:", error);
+                alert("Failed to create zip file. Make sure all audio files are in the correct directory on the server.");
             } finally {
-                document.getElementById('loadingModal').classList.add('hidden');
+                loadingModal.classList.add('hidden');
             }
         }
         
