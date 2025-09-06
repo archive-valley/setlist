@@ -11,13 +11,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #121212;
-            --surface-color: #1e1e1e;
-            --primary-text-color: #F5F5F5;
+            --bg-color: #0F0F0F;
+            --surface-color: #1a1a1a;
+            --primary-text-color: #FFFFFF;
             --secondary-text-color: #A0A0A0;
             --accent-color: #8A2BE2; /* A vibrant purple */
-            --accent-hover-color: #9932CC;
             --glitch-cyan-color: #00FFFF;
+            --button-bg: #FFFFFF;
+            --button-text: #0F0F0F;
+            --button-hover-bg: #E0E0E0;
         }
 
         body {
@@ -65,120 +67,80 @@
           0% { clip: rect(5px, 9999px, 82px, 0); transform: skew(0.3deg); } 20% { clip: rect(60px, 9999px, 25px, 0); transform: skew(0.6deg); } 40% { clip: rect(12px, 9999px, 90px, 0); transform: skew(0.2deg); } 60% { clip: rect(70px, 9999px, 30px, 0); transform: skew(0.7deg); } 80% { clip: rect(92px, 9999px, 8px, 0); transform: skew(0.1deg); } 100% { clip: rect(42px, 9999px, 98px, 0); transform: skew(0.2deg); }
         }
 
-        .action-button, .count-box, .track-box {
+        .track-button, .download-button {
             background-color: transparent;
             border: 2px solid var(--secondary-text-color);
             color: var(--primary-text-color);
-            padding: 10px 20px;
-            font-size: 16px;
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
             font-weight: bold;
             letter-spacing: 1px;
             text-transform: uppercase;
             border-radius: 8px;
             transition: all 0.2s ease-in-out;
-            cursor: pointer;
-        }
-
-        .action-button:hover, .count-box:hover, .track-box:hover {
-            background-color: var(--accent-color);
-            border-color: var(--accent-color);
-            color: var(--primary-text-color);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+            cursor: default; /* Not clickable */
+            width: 100%;
+            text-align: center;
         }
         
-        .count-box.selected, .track-box.selected {
-             background-color: var(--accent-color);
-             border-color: var(--accent-color);
-             box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+        .download-button {
+            cursor: pointer;
+            background-color: var(--button-bg);
+            border-color: var(--button-bg);
+            color: var(--button-text);
         }
 
+        .download-button:hover {
+            background-color: var(--button-hover-bg);
+            border-color: var(--button-hover-bg);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.2);
+        }
+        
         .hidden { display: none; }
         
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(5px); }
         .modal-content { background: var(--surface-color); border-radius: 12px; padding: 2.5rem; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #333; max-width: 400px; }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen p-4 text-center">
+<body class="flex flex-col items-center justify-center min-h-screen p-6">
 
-    <div class="w-full max-w-lg">
-        <header class="mb-8">
+    <div class="w-full max-w-sm">
+        <header class="mb-10 text-center">
             <h1 class="text-6xl md:text-7xl tracking-tighter glitch" data-text="gr23vy">gr23vy</h1>
-            <p class="text-lg text-secondary-text-color mt-2">ARCHIVE.VALLEY</p>
+            <p class="text-lg text-secondary-text-color mt-2 tracking-widest">ARCHIVE.VALLEY</p>
         </header>
 
-        <section id="songCountSection">
-            <h2 class="text-2xl mb-6 font-bold tracking-tight">// SELECT SETLIST LENGTH //</h2>
-            <div class="flex justify-center space-x-2 md:space-x-4">
-                <button class="count-box" data-count="1">1</button>
-                <button class="count-box" data-count="2">2</button>
-                <button class="count-box" data-count="3">3</button>
-                <button class="count-box" data-count="4">4</button>
-                <button class="count-box" data-count="5">5</button>
+        <main>
+            <div id="setlistContainer" class="space-y-4 mb-10">
+                <!-- Setlist will be populated here by JavaScript -->
             </div>
-        </section>
-
-        <section id="trackSelectionSection" class="hidden">
-            <h2 class="text-2xl mb-2 font-bold tracking-tight">// CONSTRUCT YOUR SETLIST //</h2>
-            <p class="mb-4 text-sm text-secondary-text-color">SELECT <span id="tracksToSelect"></span> TRACK(S) IN ORDER</p>
-            <div id="tracklist" class="grid grid-cols-1 gap-4 mb-6"></div>
-            <div id="selectedTracksDisplay" class="mb-4 p-4 bg-surface-color rounded-lg min-h-[50px]"></div>
-            <button id="resetSelection" class="action-button border-red-500 text-red-500 hover:bg-red-500 hover:border-red-500 hover:text-white">RESET</button>
-        </section>
-
-        <section id="setlistActionsSection" class="hidden">
-            <h2 class="text-2xl mb-6 font-bold tracking-tight">// EXPORT SETLIST //</h2>
-            <div id="finalSetlist" class="mb-6 text-left p-4 bg-surface-color rounded-lg max-w-xs mx-auto font-mono"></div>
-            <div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4">
-                <button id="downloadMastersBtn" class="action-button w-full md:w-auto">DOWNLOAD MASTERS</button>
-                <button id="downloadStemsBtn" class="action-button w-full md:w-auto">DOWNLOAD STEMS</button>
-            </div>
-            <button id="actionsResetBtn" class="action-button mt-6 text-sm py-2 px-4 border-secondary-text-color text-secondary-text-color hover:bg-secondary-text-color hover:border-secondary-text-color hover:text-bg-color">&lt;-- Start Over</button>
-        </section>
+            
+            <button id="downloadAllBtn" class="download-button">DOWNLOAD SETLIST</button>
+        </main>
     </div>
     
     <div id="loadingModal" class="modal hidden">
         <div class="modal-content">
             <h3 class="text-2xl animate-pulse">PREPARING DOWNLOAD...</h3>
-            <p class="text-secondary-text-color mt-2">Zipping files. Please wait.</p>
+            <p class="text-secondary-text-color mt-2">Zipping master tracks.</p>
         </div>
     </div>
-    
-    <div id="confirmModal" class="modal hidden">
-        <div class="modal-content">
-            <h3 class="text-2xl font-bold">Download Stems?</h3>
-            <p class="text-secondary-text-color my-4">This will download all individual stems (vocals, music, etc.) for each selected track, resulting in a larger file size and more files. Are you sure?</p>
-            <div class="flex justify-center space-x-4 mt-6">
-                <button id="confirmCancelBtn" class="action-button text-sm py-2 px-4 border-secondary-text-color text-secondary-text-color hover:bg-secondary-text-color hover:border-secondary-text-color hover:text-bg-color">CANCEL</button>
-                <button id="confirmDownloadBtn" class="action-button text-sm py-2 px-4">CONFIRM</button>
-            </div>
-        </div>
-    </div>
-
-
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const sections = {
-            count: document.getElementById('songCountSection'),
-            selection: document.getElementById('trackSelectionSection'),
-            actions: document.getElementById('setlistActionsSection'),
-        };
+        const setlistContainer = document.getElementById('setlistContainer');
+        const downloadAllBtn = document.getElementById('downloadAllBtn');
         const loadingModal = document.getElementById('loadingModal');
-        const confirmModal = document.getElementById('confirmModal');
         const glitchHeader = document.querySelector('.glitch');
 
-        let desiredSongCount = 0;
-        let selectedTracks = [];
-
-        const showSection = (name) => Object.entries(sections).forEach(([key, s]) => s.classList.toggle('hidden', key !== name));
-        
-        const resetToStart = () => {
-            desiredSongCount = 0;
-            selectedTracks = [];
-            document.querySelectorAll('.count-box.selected').forEach(b => b.classList.remove('selected'));
-            showSection('count');
-        };
+        const FINAL_SETLIST = [
+            { id: 'Intro', displayName: 'Intro', mainMix: 'Intro/Intro.mp3' },
+            { id: 'DontCryForMe', displayName: 'Don\'t Cry For Me', mainMix: 'DontCryForMe/DontCryForMe.mp3' },
+            { id: 'Spotlight', displayName: 'Spotlight', mainMix: 'Spotlight/Spotlight.mp3' },
+            { id: '3PM', displayName: '3PM', mainMix: '3PM/3PM.mp3' },
+            { id: 'suave', displayName: 'Suave', mainMix: 'suave/suave.mp3' }
+        ];
         
         // Glitch Header Animation
         const nameVariations = ['gr23vy', 'GROOVY', 'GR23VY', 'groovy'];
@@ -190,120 +152,48 @@
             glitchHeader.setAttribute('data-text', newName);
         }, 3000);
 
-        const ALL_SONGS = [
-            { id: 'DontCryForMe', displayName: 'Dont Cry For Me', mainMix: 'DontCryForMe/DontCryForMe.mp3', stems: { vocals: 'DontCryForMe/DontCryForMe[vocals].mp3', music: 'DontCryForMe/DontCryForMe[music].mp3', drums: 'DontCryForMe/DontCryForMe[drums].mp3', bass: 'DontCryForMe/DontCryForMe[bass].mp3' } },
-            { id: 'Intro', displayName: 'Intro', mainMix: 'Intro/Intro.mp3', stems: { vocals: 'Intro/Intro[vocals].mp3', music: 'Intro/Intro[music].mp3', drums: 'Intro/Intro[drums].mp3', bass: 'Intro/Intro[bass].mp3' } },
-            { id: 'Spotlight', displayName: 'Spotlight', mainMix: 'Spotlight/Spotlight.mp3', stems: { vocals: 'Spotlight/Spotlight[vocals].mp3', music: 'Spotlight/Spotlight[music].mp3', drums: 'Spotlight/Spotlight[drums].mp3', bass: 'Spotlight/Spotlight[bass].mp3' } },
-            { id: '3PM', displayName: '3PM', mainMix: '3PM/3PM.mp3', stems: { vocals: '3PM/3PM[vocals].mp3', music: '3PM/3PM[music].mp3', drums: '3PM/3PM[drums].mp3', bass: '3PM/3PM[bass].mp3' } },
-            { id: 'suave', displayName: 'Suave', mainMix: 'suave/suave.mp3', stems: { vocals: 'suave/suave[vocals].mp3', music: 'suave/suave[music].mp3', drums: 'suave/suave[drums].mp3', bass: 'suave/suave[bass].mp3' } }
-        ];
-
-        sections.count.addEventListener('click', (e) => {
-            if (e.target.classList.contains('count-box')) {
-                document.querySelectorAll('.count-box.selected').forEach(b => b.classList.remove('selected'));
-                e.target.classList.add('selected');
-                desiredSongCount = parseInt(e.target.dataset.count, 10);
-                selectedTracks = [];
-                setupTrackSelection();
-                showSection('selection');
-            }
+        // Populate the setlist on the page
+        FINAL_SETLIST.forEach(track => {
+            const trackElement = document.createElement('div');
+            trackElement.className = 'track-button';
+            trackElement.textContent = track.displayName;
+            setlistContainer.appendChild(trackElement);
         });
 
-        const setupTrackSelection = () => {
-            document.getElementById('tracksToSelect').textContent = desiredSongCount;
-            const tracklistContainer = document.getElementById('tracklist');
-            tracklistContainer.innerHTML = '';
-            ALL_SONGS.forEach(song => {
-                const button = document.createElement('button');
-                button.className = 'track-box';
-                button.textContent = song.displayName;
-                button.dataset.songId = song.id;
-                tracklistContainer.appendChild(button);
-            });
-            updateTrackSelectionUI();
-        };
+        downloadAllBtn.addEventListener('click', downloadMasterFiles);
 
-        document.getElementById('tracklist').addEventListener('click', (e) => {
-            const target = e.target.closest('.track-box');
-            if (target && !target.classList.contains('selected') && selectedTracks.length < desiredSongCount) {
-                selectedTracks.push(ALL_SONGS.find(s => s.id === target.dataset.songId));
-                updateTrackSelectionUI();
-                if (selectedTracks.length === desiredSongCount) {
-                    setTimeout(() => {
-                        renderFinalSetlist();
-                        showSection('actions');
-                    }, 500);
-                }
-            }
-        });
-
-        const updateTrackSelectionUI = () => {
-            const selectedIds = selectedTracks.map(s => s.id);
-            document.querySelectorAll('.track-box').forEach(b => {
-                b.classList.toggle('selected', selectedIds.includes(b.dataset.songId));
-                b.disabled = selectedIds.includes(b.dataset.songId);
-            });
-            document.getElementById('selectedTracksDisplay').innerHTML = selectedTracks.map((t, i) => `<div>${i + 1}. ${t.displayName}</div>`).join('');
-        };
-
-        document.getElementById('resetSelection').addEventListener('click', () => (selectedTracks = [], setupTrackSelection()));
-        
-        const renderFinalSetlist = () => {
-            document.getElementById('finalSetlist').innerHTML = selectedTracks.map((t, i) => `<p>${i + 1}. ${t.displayName}</p>`).join('');
-        };
-
-        document.getElementById('downloadMastersBtn').addEventListener('click', () => downloadZip('masters'));
-        document.getElementById('downloadStemsBtn').addEventListener('click', () => confirmModal.classList.remove('hidden'));
-        document.getElementById('confirmCancelBtn').addEventListener('click', () => confirmModal.classList.add('hidden'));
-        document.getElementById('confirmDownloadBtn').addEventListener('click', () => {
-            confirmModal.classList.add('hidden');
-            downloadZip('stems');
-        });
-
-        document.getElementById('actionsResetBtn').addEventListener('click', resetToStart);
-        
-        async function downloadZip(type = 'masters') {
+        async function downloadMasterFiles() {
             loadingModal.classList.remove('hidden');
             const zip = new JSZip();
+            
             try {
-                for (let i = 0; i < selectedTracks.length; i++) {
-                    const track = selectedTracks[i];
-                    const trackName = track.displayName.replace(/ /g, '_');
+                for (let i = 0; i < FINAL_SETLIST.length; i++) {
+                    const track = FINAL_SETLIST[i];
+                    const trackName = track.displayName.replace(/'/g, "").replace(/ /g, '_');
                     const paddedIndex = String(i + 1).padStart(2, '0');
 
-                    if (type === 'masters') {
-                        const response = await fetch(track.mainMix);
-                        if (!response.ok) throw new Error(`Could not fetch ${track.mainMix}`);
-                        const blob = await response.blob();
-                        zip.file(`${paddedIndex}-${trackName}.mp3`, blob);
-                    } else if (type === 'stems') {
-                        const trackFolder = zip.folder(`${paddedIndex}-${trackName}`);
-                        for (const stemKey in track.stems) {
-                            const stemPath = track.stems[stemKey];
-                            const response = await fetch(stemPath);
-                            if (!response.ok) throw new Error(`Could not fetch ${stemPath}`);
-                            const blob = await response.blob();
-                            trackFolder.file(`${stemKey}.mp3`, blob);
-                        }
-                    }
+                    // Add master file to the zip
+                    const masterResponse = await fetch(track.mainMix);
+                    if (!masterResponse.ok) throw new Error(`Could not fetch master: ${track.mainMix}`);
+                    const masterBlob = await masterResponse.blob();
+                    zip.file(`${paddedIndex}-${trackName}.mp3`, masterBlob);
                 }
+
                 const content = await zip.generateAsync({ type: "blob" });
                 const link = document.createElement("a");
                 link.href = URL.createObjectURL(content);
-                link.download = `gr23vy_setlist_${type}.zip`;
+                link.download = `gr23vy_setlist_masters.zip`;
                 link.click();
                 URL.revokeObjectURL(link.href);
+
             } catch (error) {
                 console.error("Error creating zip file:", error);
-                alert("Failed to create zip file. Make sure all audio files are in the correct directory on the server.");
+                alert("Failed to create zip file. Please ensure all audio files are in the correct directory on the server.");
             } finally {
                 loadingModal.classList.add('hidden');
             }
         }
-        
-        showSection('count');
     });
     </script>
 </body>
 </html>
-
